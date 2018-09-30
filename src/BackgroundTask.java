@@ -4,18 +4,20 @@ import javax.swing.SwingUtilities;
 
 public class BackgroundTask extends TimerTask{
 	Main main;
-	public BackgroundTask(Main main) {
+	TimerModel tModel;
+	public BackgroundTask(Main main, TimerModel model) {
 		this.main = main;
+		this.tModel = model;
 	}
 	@Override
 	public void run() {
-		main.secs -= 1;
+		tModel.decrementSecond();
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			
 			@Override
 			public void run() {
-				main.setTime(main.hours, main.mins, main.secs);
+				main.timerLbl.setText(tModel.toString());
 				
 			}
 		});

@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,16 +14,15 @@ public class Main extends JFrame {
 	JLabel timerLbl;
 	JPanel contentPanel;
 	JButton startBtn;
-	Timer timer;
-	TimerTask updateTime;
+	Timer bgTimer;
+	TimerTask updateTimeTask;
+	TimerModel tModel;
 
-	int secs = 20;
-	int mins = 0;
-	int hours = 0;
 
 	Main() {
 		this.setTitle("Pomdoro Timer");
-		timerLbl = new JLabel("00:20:00");
+		timerLbl = new JLabel("00:00:00");
+		tModel = new TimerModel(0, 1, 20);
 		timerLbl.setFont(new Font("Monospace", Font.TRUETYPE_FONT, 28));
 		timerLbl.setHorizontalAlignment(JLabel.CENTER);
 		contentPanel = new JPanel();
@@ -29,23 +30,26 @@ public class Main extends JFrame {
 		contentPanel.add(timerLbl, BorderLayout.CENTER);
 		this.setContentPane(contentPanel);
 
-		startBtn = new JButton("Start");
+		startBtn = new JButton("Pause");
 		JPanel southPanel = new JPanel();
 		southPanel.add(startBtn);
 		contentPanel.add(southPanel, BorderLayout.SOUTH);
-		timer = new Timer(true);
+		bgTimer = new Timer(true);
 
-		updateTime = new BackgroundTask(this);
-		timer.schedule(updateTime, 0, 1000);
+		updateTimeTask = new BackgroundTask(this, tModel);
+		bgTimer.schedule(updateTimeTask, 0, 1000);
+		startBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				bgTimer.cancel();
+				startBtn.setText("Resume");
+			}
+		});
 
 	}
 
-	public void setTime(int h, int m, int s) {
-		hours = h;
-		mins = m;
-		secs = s;
-		timerLbl.setText(String.format("%02d:%02d:%02d", hours, mins, secs));
-	}
+	
 
 	public static void main(String[] args) {
 		JFrame main = new Main();
@@ -53,6 +57,7 @@ public class Main extends JFrame {
 		main.setVisible(true);
 		main.setLocation(400, 400);
 		main.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 
 	}
 
