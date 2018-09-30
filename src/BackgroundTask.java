@@ -2,23 +2,25 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
-public class BackgroundTask extends TimerTask{
-	Main main;
+public class BackgroundTask extends TimerTask {
+	ClockLabel clock;
 	TimerModel tModel;
-	public BackgroundTask(Main main, TimerModel model) {
-		this.main = main;
+
+	public BackgroundTask(ClockLabel clock, TimerModel model) {
+		this.clock = clock;
 		this.tModel = model;
 	}
+
 	@Override
 	public void run() {
 		tModel.decrementSecond();
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				main.timerLbl.setText(tModel.toString());
-				
+				clock.setTime(tModel.getHours(), tModel.getMins(), tModel.getSecs());
+
 			}
 		});
 	}
