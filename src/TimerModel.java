@@ -64,4 +64,16 @@ public class TimerModel {
 		return String.format("%02d:%02d:%02d", hours, mins, secs);
 	}
 	
+	void reset() {
+		hours = 0;
+		mins = 0;
+		secs = 0;
+	}
+	
+	void setTime(int h, int m, int s) {
+		setHours(h);
+		setMins(m);
+		setSecs(s);
+	}
+	
 }

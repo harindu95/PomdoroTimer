@@ -2,6 +2,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -22,8 +24,8 @@ public class ClockLabel extends JPanel {
 		fields.add(new JTextField());
 		FlowLayout layout = new FlowLayout();
 		setLayout(layout);
-		layout.setVgap(50);
-		Font f = new Font("Monospace", Font.TRUETYPE_FONT, 28);
+		layout.setVgap(30);
+		Font f = new Font("Monospace", Font.TRUETYPE_FONT, 38);
 		
 		MouseListener l = new MouseListener() {
 
@@ -59,7 +61,20 @@ public class ClockLabel extends JPanel {
 
 			}
 		};
-	
+		FocusListener focusListener = new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				JTextField source = (JTextField) arg0.getSource();
+				source.setEditable(false);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
 
 		ActionListener actionListener = new ActionListener() {
 
@@ -78,6 +93,7 @@ public class ClockLabel extends JPanel {
 			
 			field.addActionListener(actionListener);
 			field.addMouseListener(l);
+			field.addFocusListener(focusListener);
 			
 			JLabel b = new JLabel(":");
 			b.setFont(f);
@@ -92,5 +108,15 @@ public class ClockLabel extends JPanel {
 		fields.get(0).setText(String.format("%02d", h));
 		fields.get(1).setText(String.format("%02d", m));
 		fields.get(2).setText(String.format("%02d", s));
+	}
+	
+	int getHours() {
+		return Integer.parseInt(fields.get(0).getText());
+	}
+	int getMins() {
+		return Integer.parseInt(fields.get(1).getText());
+	}
+	int getSecs() {
+		return Integer.parseInt(fields.get(2).getText());
 	}
 }
