@@ -1,7 +1,13 @@
 import java.util.TimerTask;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+
 interface Observer{
 	void update();
+	void done();
 }
 
 public class FxTimerTask extends TimerTask {
@@ -15,8 +21,26 @@ public class FxTimerTask extends TimerTask {
 
 	@Override
 	public void run() {
-		tModel.decrementSecond();
+		try {
+			tModel.decrementSecond();
+		} catch (TimerDone e) {
+			Platform.runLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					Alert alert = new Alert(AlertType.CONFIRMATION, "", ButtonType.OK);
+					alert.setTitle("Timer is done!");
+					observer.done();
+					alert.showAndWait();
+					
+				}
+			});
+			
+//			e.printStackTrace();
+		}
 		observer.update();
+		
 	}
 
 }

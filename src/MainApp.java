@@ -35,7 +35,7 @@ public class MainApp extends Application implements Observer{
 		Parent root = loader.load();
 		
 		
-		tModel = new TimerModel(0, 20, 0);
+		tModel = new TimerModel(0, 0, 5);
 		bgTimer = new Timer(true);
 		updateTimeTask = new FxTimerTask(this, tModel);
 		
@@ -77,6 +77,14 @@ public class MainApp extends Application implements Observer{
 			timerState = TimerState.RUN;
 		}
 	}
+	
+	public void done() {
+		bgTimer.cancel();
+		tModel.reset();
+		timerState = TimerState.OFF;
+		startBtn.setText("Start");
+	}
+	
 	public void update() {
 		Platform.runLater( new Runnable() {
 			
@@ -85,7 +93,7 @@ public class MainApp extends Application implements Observer{
 				hoursText.setText(String.format("%02d", tModel.getHours()));
 				minsText.setText(String.format("%02d", tModel.getMins()));
 				secsText.setText(String.format("%02d", tModel.getSecs()));
-				
+												
 			}
 		});
 		

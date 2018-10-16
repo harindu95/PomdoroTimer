@@ -13,7 +13,12 @@ public class BackgroundTask extends TimerTask {
 
 	@Override
 	public void run() {
-		tModel.decrementSecond();
+		try {
+			tModel.decrementSecond();
+		} catch (TimerDone e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		SwingUtilities.invokeLater(new Runnable() {
 
