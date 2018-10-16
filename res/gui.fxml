@@ -12,9 +12,9 @@
    <center>
       <HBox spacing="40.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField />
-            <TextField />
-            <TextField />
+            <TextField fx:id="hoursText" />
+            <TextField fx:id="minsText" />
+            <TextField fx:id="secsText" />
          </children>
          <BorderPane.margin>
             <Insets top="20.0" />
@@ -27,8 +27,8 @@
    <bottom>
       <FlowPane hgap="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Button" />
-            <Button mnemonicParsing="false" text="Button" />
+            <Button fx:id="startBtn" mnemonicParsing="false" text="Start" />
+            <Button fx:id="resetBtn" mnemonicParsing="false" text="Reset" />
          </children>
          <BorderPane.margin>
             <Insets />
