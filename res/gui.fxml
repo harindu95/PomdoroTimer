@@ -27,7 +27,7 @@
    <bottom>
       <FlowPane hgap="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="startBtn" mnemonicParsing="false" text="Start" />
+            <Button fx:id="startBtn" mnemonicParsing="false" onAction="#handleStartBtn" text="Start" />
             <Button fx:id="resetBtn" mnemonicParsing="false" text="Reset" />
          </children>
          <BorderPane.margin>

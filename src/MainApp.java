@@ -1,10 +1,9 @@
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.SwingUtilities;
-
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,6 +24,9 @@ public class MainApp extends Application implements Observer{
 	Timer bgTimer;
 	TimerTask updateTimeTask;
 	TimerModel tModel;
+	
+	enum TimerState { OFF, PAUSE, RUN};
+	TimerState timerState = TimerState.RUN;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -47,6 +49,24 @@ public class MainApp extends Application implements Observer{
 		launch(args);
 	}
 	
+	@FXML
+	protected void handleStartBtn(ActionEvent e) {
+		if(timerState == TimerState.RUN) {
+			bgTimer.cancel();
+			startBtn.setText("Resume");
+			timerState = TimerState.PAUSE;
+		}else if(timerState == TimerState.PAUSE) {
+			bgTimer = new Timer();
+			bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
+			startBtn.setText("Pause");
+			timerState = TimerState.RUN;
+		}else if(timerState == TimerState.OFF) {
+			bgTimer = new Timer();
+			bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
+			startBtn.setText("Pause");
+			timerState = TimerState.RUN;
+		}
+	}
 	public void update() {
 		Platform.runLater( new Runnable() {
 			
