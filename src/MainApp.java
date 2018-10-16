@@ -50,6 +50,16 @@ public class MainApp extends Application implements Observer{
 	}
 	
 	@FXML
+	protected void handleResetBtn(ActionEvent e) {
+		bgTimer.cancel();
+		tModel.reset();
+		timerState = TimerState.OFF;
+		startBtn.setText("Start");
+		update();
+	}
+	
+	
+	@FXML
 	protected void handleStartBtn(ActionEvent e) {
 		if(timerState == TimerState.RUN) {
 			bgTimer.cancel();
@@ -72,9 +82,9 @@ public class MainApp extends Application implements Observer{
 			
 			@Override
 			public void run() {
-				hoursText.setText(String.format("%2d", tModel.getHours()));
-				minsText.setText(String.format("%2d", tModel.getMins()));
-				secsText.setText(String.format("%2d", tModel.getSecs()));
+				hoursText.setText(String.format("%02d", tModel.getHours()));
+				minsText.setText(String.format("%02d", tModel.getMins()));
+				secsText.setText(String.format("%02d", tModel.getSecs()));
 				
 			}
 		});
