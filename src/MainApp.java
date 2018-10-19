@@ -1,54 +1,113 @@
+
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.UnaryOperator;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.layout.Background;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-public class MainApp extends Application implements Observer{
+public class MainApp extends Application implements Observer {
 
-	
-	@FXML TextField hoursText;
-	@FXML TextField minsText;
-	@FXML TextField secsText;
-	@FXML Button startBtn;
-	@FXML Button resetBtn;
-	
+	@FXML
+	TextField minsText;
+	@FXML
+	TextField secsText;
+	@FXML
+	Button startBtn;
+	@FXML
+	Button resetBtn;
+
 	Timer bgTimer;
 	TimerTask updateTimeTask;
 	TimerModel tModel;
-	
-	enum TimerState { OFF, PAUSE, RUN};
-	TimerState timerState = TimerState.RUN;
-	
+	Parent root;
+
+	enum TimerState {
+		OFF, PAUSED, RUNNING
+	};
+
+	TimerState timerState = TimerState.OFF;
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("gui.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("gui2.fxml"));
 		loader.setController(this);
-		Parent root = loader.load();
-		
-		
-		tModel = new TimerModel(0, 0, 5);
+		root = loader.load();
+
+		tModel = Persistent.read();
 		bgTimer = new Timer(true);
 		updateTimeTask = new FxTimerTask(this, tModel);
-		
+
+		prepareTextField(minsText);
+		prepareTextField(secsText);
+
 		Scene myscene = new Scene(root);
 		primaryStage.setScene(myscene);
+		primaryStage.setTitle("Pomodoro Timer");
 		primaryStage.show();
-		bgTimer.schedule(updateTimeTask, 200,1000);
+
+		update();
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+			public void handle(WindowEvent t) {
+				Platform.exit();
+				System.exit(0);
+			}
+		});
 	}
-	
+
+	public void addFocusListener(TextField text) {
+		text.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean newVal) {
+				if (newVal) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							if (text.isFocused() && !text.getText().isEmpty()) {
+								text.selectAll();
+								stopTimer();
+							} else {
+
+							}
+						}
+					});
+
+				}
+			}
+
+		});
+	}
+
+	public void pauseTimer() {
+		bgTimer.cancel();
+		startBtn.setText("Resume");
+		timerState = TimerState.PAUSED;
+	}
+
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	@FXML
 	protected void handleResetBtn(ActionEvent e) {
 		bgTimer.cancel();
@@ -57,45 +116,106 @@ public class MainApp extends Application implements Observer{
 		startBtn.setText("Start");
 		update();
 	}
-	
-	
+
+	public void stopTimer() {
+		bgTimer.cancel();
+		startBtn.setText("Start");
+		timerState = TimerState.OFF;
+	}
+
+	public void readTextFields() {
+
+		int m = 0;
+		int s = 0;
+		m = Integer.parseInt(minsText.getText());
+		s = Integer.parseInt(secsText.getText());
+		if (!tModel.isEqual(m, s)) {
+			tModel.setTime(m, s);
+			Persistent.save(tModel);
+			stopTimer();
+		}
+		System.out.println("Time: " + tModel.toString());
+	}
+
+	public void prepareTextField(TextField text) {
+
+		UnaryOperator<Change> modifyChange = c -> {
+			if (c.isContentChange()) {
+				int newLength = c.getControlNewText().length();
+				String txt = c.getText();
+				if (!txt.matches("[0-9]*")) {
+					return null;
+				}
+				if (newLength > 2) {
+					return null;
+				}
+			}
+			return c;
+		};
+
+		text.setTextFormatter(new TextFormatter<String>(modifyChange));
+		text.setBackground(Background.EMPTY);
+		text.setBorder(javafx.scene.layout.Border.EMPTY);
+		text.setPadding(Insets.EMPTY);
+		Font font = Font.font("Noto Mono", FontWeight.LIGHT, 70);
+
+		text.setFont(font);
+
+		text.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleStartBtn(arg0);
+				root.requestFocus();
+
+			}
+		});
+		addFocusListener(text);
+	}
+
+	public void resumeTimer() {
+		bgTimer = new Timer();
+		bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
+		startBtn.setText("Pause");
+		timerState = TimerState.RUNNING;
+	}
+
+	public void startTimer() {
+		bgTimer = new Timer();
+		bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
+		startBtn.setText("Pause");
+		timerState = TimerState.RUNNING;
+	}
+
 	@FXML
 	protected void handleStartBtn(ActionEvent e) {
-		if(timerState == TimerState.RUN) {
-			bgTimer.cancel();
-			startBtn.setText("Resume");
-			timerState = TimerState.PAUSE;
-		}else if(timerState == TimerState.PAUSE) {
-			bgTimer = new Timer();
-			bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
-			startBtn.setText("Pause");
-			timerState = TimerState.RUN;
-		}else if(timerState == TimerState.OFF) {
-			bgTimer = new Timer();
-			bgTimer.schedule(new FxTimerTask(this, tModel), 10, 1000);
-			startBtn.setText("Pause");
-			timerState = TimerState.RUN;
+		readTextFields();
+		if (timerState == TimerState.RUNNING) {
+			pauseTimer();
+		} else if (timerState == TimerState.PAUSED) {
+			resumeTimer();
+		} else if (timerState == TimerState.OFF) {
+			startTimer();
 		}
 	}
-	
+
 	public void done() {
 		bgTimer.cancel();
 		tModel.reset();
 		timerState = TimerState.OFF;
 		startBtn.setText("Start");
 	}
-	
+
 	public void update() {
-		Platform.runLater( new Runnable() {
-			
+		Platform.runLater(new Runnable() {
+
 			@Override
 			public void run() {
-				hoursText.setText(String.format("%02d", tModel.getHours()));
 				minsText.setText(String.format("%02d", tModel.getMins()));
 				secsText.setText(String.format("%02d", tModel.getSecs()));
-												
+
 			}
 		});
-		
+
 	}
 }

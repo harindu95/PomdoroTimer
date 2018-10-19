@@ -1,22 +1,17 @@
 
 public class TimerModel {
-	private int hours = 0;
+
 	private int mins = 0;
 	private int secs = 0;
 
-	TimerModel(int h, int m, int s) {
-		setHours(h);
+	TimerModel(int m, int s) {
+
 		setMins(m);
 		setSecs(s);
 	}
 
-	void setHours(int h) {
-		if (h >= 0)
-			hours = h;
-	}
-
 	void setMins(int m) {
-		if (m >= 0 && m < 60) {
+		if (m >= 0) {
 			mins = m;
 		}
 	}
@@ -36,21 +31,9 @@ public class TimerModel {
 				secs = 60;
 				secs--;
 			} else {
-				if (hours > 0) {
-					hours--;
-					mins = 60;
-					mins--;
-					secs = 60;
-					secs--;
-				} else {
-					throw new TimerDone();
-				}
+				throw new TimerDone();
 			}
 		}
-	}
-
-	int getHours() {
-		return hours;
 	}
 
 	int getMins() {
@@ -62,26 +45,32 @@ public class TimerModel {
 	}
 
 	public String toString() {
-		return String.format("%02d:%02d:%02d", hours, mins, secs);
+		return String.format("%02d:%02d", mins, secs);
 	}
 
 	void reset() {
-		hours = 0;
+
 		mins = 0;
 		secs = 0;
 	}
 
-	void setTime(int h, int m, int s) {
-		setHours(h);
+	void setTime(int m, int s) {
 		setMins(m);
 		setSecs(s);
 	}
 
 	public boolean isDone() {
-		if ((hours + secs + mins) == 0)
+		if ((secs + mins) == 0)
 			return true;
 		else
 			return false;
+	}
+
+	public boolean isEqual(int m, int s) {
+		if (m != mins || s != secs) {
+			return false;
+		}
+		return true;
 	}
 
 }

@@ -24,7 +24,7 @@ public class BackgroundTask extends TimerTask {
 
 			@Override
 			public void run() {
-				clock.setTime(tModel.getHours(), tModel.getMins(), tModel.getSecs());
+				clock.setTime(tModel.getMins(), tModel.getSecs());
 
 			}
 		});

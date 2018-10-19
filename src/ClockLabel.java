@@ -21,11 +21,11 @@ public class ClockLabel extends JPanel {
 		fields = new ArrayList<>();
 		fields.add(new JTextField());
 		fields.add(new JTextField());
-		fields.add(new JTextField());
+		
 		FlowLayout layout = new FlowLayout();
 		setLayout(layout);
 		layout.setVgap(30);
-		Font f = new Font("Monospace", Font.TRUETYPE_FONT, 38);
+		Font f = new Font("Monospace", Font.TRUETYPE_FONT, 70);
 		
 		MouseListener l = new MouseListener() {
 
@@ -97,26 +97,23 @@ public class ClockLabel extends JPanel {
 			
 			JLabel b = new JLabel(":");
 			b.setFont(f);
-			if(i != 2)
+			if(i != 1)
 				add(b);
 			i++;
 		}
 		
 	}
 
-	void setTime(int h, int m, int s) {
-		fields.get(0).setText(String.format("%02d", h));
-		fields.get(1).setText(String.format("%02d", m));
-		fields.get(2).setText(String.format("%02d", s));
+	void setTime(int m, int s) {
+		
+		fields.get(0).setText(String.format("%02d", m));
+		fields.get(1).setText(String.format("%02d", s));
 	}
-	
-	int getHours() {
+
+	int getMins() {
 		return Integer.parseInt(fields.get(0).getText());
 	}
-	int getMins() {
-		return Integer.parseInt(fields.get(1).getText());
-	}
 	int getSecs() {
-		return Integer.parseInt(fields.get(2).getText());
+		return Integer.parseInt(fields.get(1).getText());
 	}
 }
