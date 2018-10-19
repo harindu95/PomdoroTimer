@@ -25,7 +25,7 @@ public class Main extends JFrame {
 	Main() {
 		this.setTitle("Pomdoro Timer");
 		timerLbl = new ClockLabel();
-		tModel = new TimerModel(0, 0, 0);
+		tModel = new TimerModel(0, 0);
 
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BorderLayout());
@@ -48,7 +48,7 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				bgTimer.cancel();
 				tModel.reset();
-				timerLbl.setTime(0, 0, 0);
+				timerLbl.setTime(0, 0);
 				timerState = TimerState.OFF;
 				startBtn.setText("Start");
 			}
@@ -71,13 +71,13 @@ public class Main extends JFrame {
 				}else if(timerState == TimerState.OFF) {
 					bgTimer = new Timer();
 					bgTimer.schedule(new BackgroundTask(timerLbl, tModel), 10, 1000);
-					tModel.setTime(timerLbl.getHours(), timerLbl.getMins(), timerLbl.getSecs());
+					tModel.setTime(timerLbl.getMins(), timerLbl.getSecs());
 					startBtn.setText("Pause");
 					timerState = TimerState.RUN;
 				}
 			}
 		});
-		timerLbl.setTime(0, 0, 0);
+		timerLbl.setTime( 0, 0);
 //		bgTimer.schedule(updateTimeTask, 200, 1000);
 
 	}

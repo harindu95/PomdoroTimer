@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="196.0" prefWidth="344.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="272.0" prefWidth="306.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
-      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="20.0" prefWidth="346.0" BorderPane.alignment="CENTER">
+      <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="20.0" prefWidth="344.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="startBtn" mnemonicParsing="false" onAction="#handleStartBtn" styleClass="btn" stylesheets="@style.css" text="Start">
                <font>
@@ -33,19 +33,9 @@
    <center>
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="hoursText" alignment="CENTER" prefColumnCount="2" promptText="00" style="-fx-padding: 0;">
-               <font>
-                  <Font size="50.0" />
-               </font>
-            </TextField>
-            <Label text=":">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Label>
             <TextField fx:id="minsText" alignment="CENTER" prefColumnCount="2" promptText="00" style="-fx-padding: 0;">
                <font>
-                  <Font size="50.0" />
+                  <Font size="72.0" />
                </font>
             </TextField>
             <Label text=":">
@@ -55,7 +45,7 @@
             </Label>
             <TextField fx:id="secsText" alignment="CENTER" prefColumnCount="2" promptText="00" style="-fx-padding: 0;">
                <font>
-                  <Font size="50.0" />
+                  <Font size="72.0" />
                </font>
             </TextField>
          </children>
