@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -55,9 +56,11 @@ public class Persistent {
 
 	public static void writeToFile(String filename, String data) {
 		try {
+			File file = new File(filename);
+			System.out.println(file.getAbsolutePath());
 			// Assume default encoding.
 			FileWriter fileWriter = new FileWriter(filename);
-
+			
 			// Always wrap FileWriter in BufferedWriter.
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 

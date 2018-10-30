@@ -1,4 +1,5 @@
 
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.UnaryOperator;
@@ -18,6 +19,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -58,10 +62,11 @@ public class MainApp extends Application implements Observer {
 
 		prepareTextField(minsText);
 		prepareTextField(secsText);
-
+		
 		Scene myscene = new Scene(root);
 		primaryStage.setScene(myscene);
 		primaryStage.setTitle("Pomodoro Timer");
+		primaryStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("stopwatch.png")));
 		primaryStage.show();
 
 		update();
@@ -72,6 +77,18 @@ public class MainApp extends Application implements Observer {
 				System.exit(0);
 			}
 		});
+		
+		myscene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				// TODO Auto-generated method stub
+				if(event.getCode() == KeyCode.ENTER) {
+					handleStartBtn(null);
+				}
+			}
+			
+		});;
 	}
 
 	public void addFocusListener(TextField text) {
@@ -108,33 +125,45 @@ public class MainApp extends Application implements Observer {
 		launch(args);
 	}
 
+	/**
+	 * Reset Timer(Cancel Timer)
+	 * 
+	 * @param e
+	 */
 	@FXML
 	protected void handleResetBtn(ActionEvent e) {
-		bgTimer.cancel();
-		tModel.reset();
-		timerState = TimerState.OFF;
-		startBtn.setText("Start");
+		tModel = Persistent.read();
+		stopTimer();
 		update();
 	}
 
+	/**
+	 * Stop Timer
+	 */
 	public void stopTimer() {
 		bgTimer.cancel();
 		startBtn.setText("Start");
 		timerState = TimerState.OFF;
 	}
 
-	public void readTextFields() {
+	public void readInputFromGUI() {
 
 		int m = 0;
 		int s = 0;
-		m = Integer.parseInt(minsText.getText());
-		s = Integer.parseInt(secsText.getText());
+		try {
+			m = Integer.parseInt(minsText.getText());
+			s = Integer.parseInt(secsText.getText());
+		} catch (NumberFormatException e) {
+			System.err.println("Number format exception!");
+
+		}
 		if (!tModel.isEqual(m, s)) {
 			tModel.setTime(m, s);
 			Persistent.save(tModel);
 			stopTimer();
+			System.out.println("Time: " + tModel.toString());
 		}
-		System.out.println("Time: " + tModel.toString());
+
 	}
 
 	public void prepareTextField(TextField text) {
@@ -145,8 +174,7 @@ public class MainApp extends Application implements Observer {
 				String txt = c.getText();
 				if (!txt.matches("[0-9]*")) {
 					return null;
-				}
-				if (newLength > 2) {
+				} else if (newLength > 2) {
 					return null;
 				}
 			}
@@ -160,7 +188,6 @@ public class MainApp extends Application implements Observer {
 		Font font = Font.font("Noto Mono", FontWeight.LIGHT, 70);
 
 		text.setFont(font);
-
 		text.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -189,7 +216,7 @@ public class MainApp extends Application implements Observer {
 
 	@FXML
 	protected void handleStartBtn(ActionEvent e) {
-		readTextFields();
+		readInputFromGUI();
 		if (timerState == TimerState.RUNNING) {
 			pauseTimer();
 		} else if (timerState == TimerState.PAUSED) {
@@ -200,12 +227,12 @@ public class MainApp extends Application implements Observer {
 	}
 
 	public void done() {
-		bgTimer.cancel();
-		tModel.reset();
-		timerState = TimerState.OFF;
-		startBtn.setText("Start");
+		handleResetBtn(null);
 	}
 
+	/**
+	 * Update view
+	 */
 	public void update() {
 		Platform.runLater(new Runnable() {
 
